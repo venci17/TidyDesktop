@@ -1,0 +1,35 @@
+<body style="overflow: hidden;">
+  <div id="bar" style="
+    -webkit-app-region: drag;    
+    position: absolute;
+    top: 0px;
+    height: 30px;
+    width: 2000%;
+    background: firebrick;"
+	></div>
+<iframe id="widget" style="border: 0; position: absolute; display: flex;" width="100%" height="100%">
+</iframe>
+</body>
+<script>
+var {ipcRenderer, remote, screen, webContents} = require('electron');
+window.onload = function() {
+	var str = document.URL;
+	
+	document.getElementById('widget').src = str.split("??")[1];
+};
+
+ipcRenderer.on('LockWidget', (event, message) => {
+    
+	if(message==1)
+	{
+		document.getElementById("bar").style.display = "none";
+		console.log("show");
+	}
+	else
+	{
+		document.getElementById("bar").style.display = "flex";
+		console.log("hide");
+	}
+})
+
+</script>

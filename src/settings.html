@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Settings</title>
+	<link rel="stylesheet" href="../node_modules/xel/themes/material.css">
+	<script src="../node_modules/xel/xel.min.js"></script>
+	 
+	<style>
+	ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		background-color: #333;
+	}
+
+	.titlebar {
+		-webkit-user-select: none;
+		-webkit-app-region: drag;
+	}
+
+	li {
+		float: left;
+		-webkit-user-select: unset;
+		-webkit-app-region: no-drag;
+	}
+
+	#menu {
+	display: inline-table !important;
+	}
+	
+	.nav-bar-button {
+		float: right;
+	}
+
+	li a {
+		display: block;
+		color: white;
+		text-align: center;
+		padding: 14px 16px;
+		text-decoration: none;
+	}
+
+	li a:hover {
+		background-color: #111;
+	}
+
+	dialog::backdrop {
+		pointer-events: none;
+	}
+	</style>
+	 
+</head>
+
+<body>
+  
+<ul class="titlebar">
+  <li><a class="active" id="Logo">Logo</a></li>
+  <li class="nav-bar-button"><a id="Exit"><x-icon name="close"></x-icon></a></li>
+  <li class="nav-bar-button"><a id="Info"><x-icon name="info"></x-icon></a></li>
+  <li class="nav-bar-button"><a id="Load"><x-label>Load</x-label></a></li>
+  <li class="nav-bar-button"><a id="Save"><x-label>Save</x-label></a></li>
+</ul>
+  
+<x-card>
+	<header>
+    <h3>Widgets</h3>
+		<x-button skin="iconic">
+		
+		<x-icon name="add"></x-icon>
+		
+			<dialog>
+				<main>
+				
+					<x-card>
+						<header>
+							<h3>Create Widget</h3>
+						</header>
+
+						<main>
+						
+							<x-input style="max-width:100%" id ="name">
+								<x-icon name="receipt"></x-icon>
+								<x-label>Name</x-label>
+							</x-input>
+							<x-input style="max-width:100%" id="url" type="url">
+								<x-icon name="public"></x-icon>
+								<x-label>URL</x-label>
+							</x-input>
+							
+						</main>
+					</x-card>
+				
+				</main>
+				
+				<footer>
+					<x-button onclick="CreateWidget(this)">
+						<x-label>Create</x-label>
+					</x-button>
+					<x-button onclick="CloseDialog(this)">
+						<x-label>Cancel</x-label>
+					</x-button>
+				</footer>
+			</dialog>
+		
+		</x-button>
+
+	</header>
+
+	<main>
+	<table style="width:100%; text-align:center;">
+	<thead>
+        <tr>
+            <th>Name</th>
+            <th>Configurations</th>
+        </tr>
+	</thead>
+	<tbody id="TBody">
+	</tbody>
+	</table> 
+	</main>
+</x-card>
+  
+ </body>
+ 
+ <script>
+var {ipcRenderer, remote, screen, webContents} = require('electron');
+var exitbtn = document.getElementById("Exit");
+var aboutbtn = document.getElementById("About");
+var savebtn = document.getElementById("Save");
+var loadbtn = document.getElementById("Load");
+var tableelm = document.getElementById("TBody");
+var curwindow = remote.getCurrentWindow();
+ 
+var button = '<x-button> <x-icon name="settings"> </x-icon> <x-menu> <x-menuitem onClick="DeleteWidget(this);"> <x-icon name="delete"> </x-icon>  <x-label>Delete</x-label>  </x-menuitem> </x-menu> </x-button>';
+ 
+exitbtn.addEventListener("click", e => {
+curwindow.close();
+});
+
+savebtn.addEventListener("click", e => {
+	ipcRenderer.send("Save");
+});
+
+loadbtn.addEventListener("click", e => {
+	ipcRenderer.send("Load");
+});
+
+function DeleteWidget(object)
+{
+ipcRenderer.send("Delete",object.parentNode.parentNode.parentNode.parentNode.tableid);
+}
+
+function CloseDialog(dialog) {
+	dialog.closest('dialog').close();
+}
+ 
+ipcRenderer.send("GetAllWidgets");
+ 
+ ipcRenderer.on('ReturnAllWidgets', (event, arg) => {
+  while(tableelm.rows.length > 0) {
+  tableelm.deleteRow(0);
+}
+
+arg.forEach(element => {
+	var row,cell;
+	row = tableelm.insertRow(-1);
+	row.tableid = element.ids;
+	cell = row.insertCell();
+	cell.innerHTML = element.name;
+	cell = row.insertCell();
+	cell.id = "menu";
+	cell.innerHTML = button;
+});
+ console.log(arg);
+ });
+ 
+ 
+ 
+ 
+function CreateWidget(dialog) {
+	var obj = new Object();
+	obj.name = document.getElementById("name").value;
+	obj.url = document.getElementById("url").value;
+	ipcRenderer.send("CreateWindow",obj);
+	dialog.closest('dialog').close();
+	
+}
+ 
+ </script>
+</html>
