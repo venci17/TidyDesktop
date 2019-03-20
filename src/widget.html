@@ -3,15 +3,29 @@
     -webkit-app-region: drag;    
     position: absolute;
     top: 0px;
-    height: 30px;
+    height: 15px;
     width: 2000%;
-    background: firebrick;"
+    background: firebrick;
+	z-index: 2;"
 	></div>
-<iframe id="widget" style="border: 0; position: absolute; display: flex;" width="100%" height="100%">
+<iframe id="widget" style="
+    border: black;
+    position: absolute;
+    display: flex;
+    background-color: white;
+    z-index: 0;
+    border-width: thick;
+    border-style: groove;
+    width: 97%;
+	height: 97%">
 </iframe>
 </body>
 <script>
 var {ipcRenderer, remote, screen, webContents} = require('electron');
+
+var bar = document.getElementById("bar");
+var widget = document.getElementById("widget");
+
 window.onload = function() {
 	var str = document.URL;
 	
@@ -22,12 +36,20 @@ ipcRenderer.on('LockWidget', (event, message) => {
     
 	if(message==1)
 	{
-		document.getElementById("bar").style.display = "none";
+		bar.style.display = "none";
+		widget.style.borderStyle = "none";
+		widget.style.backgroundColor = "transparent";
+		widget.style.width = "100%";
+		widget.style.height = "100%";
 		console.log("show");
 	}
 	else
 	{
-		document.getElementById("bar").style.display = "flex";
+		bar.style.display = "flex";
+		widget.style.borderStyle = "groove";
+		widget.style.backgroundColor = "white";
+		widget.style.width = "97%";
+		widget.style.height = "97%";
 		console.log("hide");
 	}
 })

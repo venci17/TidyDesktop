@@ -59,8 +59,8 @@ function OpenSettingsWidgets() {
 	Settings.loadURL(`file://${__dirname}/settings.html`);
 
   // Open the DevTools.
-  //Settings.webContents.openDevTools();
-console.log(Settings.id);
+  Settings.webContents.openDevTools();
+//console.log(Settings.id);
   // Emitted when the window is closed.
   Settings.on('closed', () => {
     // Dereference the window object, usually you would store windows
@@ -87,19 +87,31 @@ ipcMain.on('Save', (event, arg) => {
 	SaveWidgets();
 })
 
+ipcMain.on('Lock', (event, arg) => {
+	LockAllWidgets();
+})
+
+ipcMain.on('Unlock', (event, arg) => {
+	UnlockAllWidgets();
+})
 
 ipcMain.on('Load', (event, arg) => {
 	
 	WidgetsWindows.forEach(element => {
 		element.close();
 	});
-	
+	try{
 	let rawdata = fs.readFileSync('Save.txt');  
 	let student = JSON.parse(rawdata);  
 	student.forEach(element => {
-	console.log(element);  
+	//console.log(element);  
 	LoadWidgets(element.name,element.url,element.x,element.y,element.height,element.width)
 	});
+	}
+	catch (err)
+	{
+	console.log("it's fine");	
+	}
 	//LoadWidgets();
 })
 
@@ -181,7 +193,7 @@ function SaveWidgets()
 	var SaveFile = [];
 	WidgetsWindows.forEach(element => {
 		var Widget = new WidgetForSaving(element.getBounds().x,element.getBounds().y,element.getBounds().width,element.getBounds().height,element.name,element.url);
-		console.log(Widget);
+		//console.log(Widget);
 		SaveFile.push(Widget);
 	});
 
@@ -221,7 +233,7 @@ function LoadWidgets(name,url,x,y,height,width) {
   CurrentWidget.loadURL(res);
 
   // Open the DevTools.
-  //CurrentWidget.webContents.openDevTools();
+  CurrentWidget.webContents.openDevTools();
   if(Settings != null)
   Settings.webContents.send('ReturnAllWidgets', WidgetsWindows);
   // Emitted when the window is closed.

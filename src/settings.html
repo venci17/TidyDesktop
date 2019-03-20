@@ -27,6 +27,11 @@
 		-webkit-app-region: no-drag;
 	}
 
+.custom-slider {
+		display: block;
+		padding: 5%;
+	}
+
 	#menu {
 	display: inline-table !important;
 	}
@@ -62,6 +67,8 @@
   <li class="nav-bar-button"><a id="Info"><x-icon name="info"></x-icon></a></li>
   <li class="nav-bar-button"><a id="Load"><x-label>Load</x-label></a></li>
   <li class="nav-bar-button"><a id="Save"><x-label>Save</x-label></a></li>
+  <li class="nav-bar-button"><a id="Lock"><x-label>Lock</x-label></a></li>
+  <li class="nav-bar-button"><a id="Unlock"><x-label>Unlock</x-label></a></li>
 </ul>
   
 <x-card>
@@ -131,10 +138,12 @@ var exitbtn = document.getElementById("Exit");
 var aboutbtn = document.getElementById("About");
 var savebtn = document.getElementById("Save");
 var loadbtn = document.getElementById("Load");
+var lockbtn = document.getElementById("Lock");
+var unlockbtn = document.getElementById("Unlock");
 var tableelm = document.getElementById("TBody");
 var curwindow = remote.getCurrentWindow();
  
-var button = '<x-button> <x-icon name="settings"> </x-icon> <x-menu> <x-menuitem onClick="DeleteWidget(this);"> <x-icon name="delete"> </x-icon>  <x-label>Delete</x-label>  </x-menuitem> </x-menu> </x-button>';
+var button = '<x-button> <x-icon name="settings"> </x-icon> <x-menu> <x-menuitem onClick="DeleteWidget(this);"> <x-icon name="delete"> </x-icon>  <x-label>Delete</x-label>  </x-menuitem> <div class="custom-slider"> <x-slider value="0" disabled> <x-label value="0">Transparent</x-label> <x-label value="100">Opaque</x-label> </x-slider> </div> </x-menu> </x-button>';
  
 exitbtn.addEventListener("click", e => {
 curwindow.close();
@@ -146,6 +155,14 @@ savebtn.addEventListener("click", e => {
 
 loadbtn.addEventListener("click", e => {
 	ipcRenderer.send("Load");
+});
+
+lockbtn.addEventListener("click", e => {
+	ipcRenderer.send("Lock");
+});
+
+unlockbtn.addEventListener("click", e => {
+	ipcRenderer.send("Unlock");
 });
 
 function DeleteWidget(object)
